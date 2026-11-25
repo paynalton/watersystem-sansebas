@@ -1,0 +1,81 @@
+@startuml
+title Circuito hidráulico doméstico - Rev. 3
+
+left to right direction
+skinparam linetype ortho
+skinparam componentStyle rectangle
+
+component "Medidor del Estado" as M
+component "Llave de paso general" as V
+component "Tramo de entrada" as TE
+component "VC1 - Válvula check" as VC1
+
+component "Red de agua fría" as AF
+component "Boiler" as B
+component "Red de agua caliente" as AC
+
+component "Regadera" as R
+component "Tarja" as T
+component "Lavabo" as L
+component "Lavadero" as LD
+component "Ramal de servicio frío" as RS
+
+package "Instalación de lavadora" {
+    component "Llave de servicio fría" as LF
+    component "Llave de servicio caliente" as LC
+}
+
+package "Circuito auxiliar" {
+    component "EV1 - Electroválvula" as EV1
+    component "VF1 - Válvula de flotador" as VF1
+    component "TN1 - Tinaco" as TN1
+    component "P1 - Presurizador" as P1
+    component "VC2 - Válvula check" as VC2
+}
+
+package "Sistema de control" {
+    component "SP1 - Sensor de presión" as SP1
+    component "C1 - Controlador" as C1
+}
+
+' Alimentación principal
+M -[#blue]-> V
+V -[#blue]-> TE
+TE -[#blue]-> VC1
+VC1 -[#blue]-> AF
+
+' Distribución de agua fría
+AF -[#blue]-> B
+AF -[#blue]-> R
+AF -[#blue]-> T
+AF -[#blue]-> L
+AF -[#blue]-> LD
+AF -[#blue]- RS
+RS -[#blue]-> LF
+
+' Distribución de agua caliente
+B -[#red]-> AC
+AC -[#red]-> R
+AC -[#red]-> T
+AC -[#red]-> L
+AC -[#red]-> LC
+
+' Llenado del tinaco
+RS -[#blue]-> EV1
+EV1 -[#blue]-> VF1
+VF1 -[#blue]-> TN1
+
+' Retorno presurizado
+TN1 -[#blue]-> P1
+P1 -[#blue]-> VC2
+VC2 -[#blue]-> RS
+
+' Sensado hidráulico
+TE -[#blue]- SP1
+
+' Señales de control
+SP1 ..> C1 : Presión
+C1 ..> P1 : Habilitación
+C1 ..> EV1 : Apertura / cierre
+
+@enduml
